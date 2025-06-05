@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App de Bajo</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, #2c3e50, #1a242f); /* Gradiente oscuro para fondo */
+            color: white;
+            font-family: 'Inter', sans-serif; /* Fuente Inter para un look moderno */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            touch-action: none; /* Previene el scroll al tocar */
+            overflow: hidden; /* Evita barras de desplazamiento */
+        }
+        /* Estilos para el título de la aplicación */
+        h2 {
+            font-size: calc(2rem + 1vw);
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            color: #ecf0f1; /* Color de texto suave */
+        }
+        /* Contenedor de botones para un mejor espaciado */
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 90%;
+            max-width: 500px; /* Ancho máximo para la columna de botones */
+            padding: 10px;
+            gap: 15px; /* Espacio entre botones */
+        }
+        .note-button {
+            width: 100%;
+            padding: 25px; /* Más padding para botones más grandes */
+            border: none;
+            border-radius: 15px; /* Esquinas más redondeadas */
+            color: white;
+            font-size: calc(1.2rem + 1.2vw); /* Texto más grande */
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra para profundidad */
+            background-color: #34495e; /* Color base de los botones */
+        }
+        /* Colores específicos para cada nota para un look de bajo */
+        .note-button[data-note="C3"] { background-color: #2c3e50; } /* Gris azulado oscuro */
+        .note-button[data-note="D3"] { background-color: #34495e; } /* Gris azulado */
+        .note-button[data-note="E3"] { background-color: #3c566b; } /* Azul verdoso oscuro */
+        .note-button[data-note="F3"] { background-color: #466075; } /* Azul verdoso */
+        .note-button[data-note="G3"] { background-color: #506d80; } /* Azul grisáceo */
+        .note-button[data-note="A3"] { background-color: #5d7a8d; } /* Azul grisáceo claro */
+        .note-button[data-note="B3"] { background-color: #6a889b; } /* Azul claro */
+        .note-button[data-note="C4"] { background-color: #7896a8; } /* Azul muy claro */
+
+        .note-button.active {
+            transform: scale(0.98); /* Ligero efecto de "presionado" */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            background-color: #2ecc71; /* Verde brillante al activar */
+        }
+        .note-button.glow {
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.7); /* Brillo verde */
+            animation: pulse 0.6s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(1.02); opacity: 0.9; }
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            font-size: 1em;
+            background: #555;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        }
+        .back-button:hover {
+            background: #777;
+        }
+        footer {
+            position: absolute;
+            bottom: 10px; /* Posición inferior para el footer */
+            left: 10px;
+            font-size: 0.8em;
+            color: #bdc3c7; /* Color de texto suave para footer */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 600px) {
+            h2 {
+                margin-top: 40px; /* Ajuste para móviles */
+                margin-bottom: 15px;
+            }
+            .note-button {
+                padding: 18px;
+                font-size: calc(1rem + 1vw);
+            }
+            .buttons-container {
+                gap: 10px;
+            }
+            .back-button {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <button class="back-button" onclick="location.href='https://manuelpueblavega.github.io/appInstru/'">Volver</button>
+    <h2>Bajo Virtual</h2>
+    <div class="buttons-container">
+        <!-- Notas del bajo: Do3 a Do4 -->
+        <button class="note-button" data-note="C3">Do3</button>
+        <button class="note-button" data-note="D3">Re3</button>
+        <button class="note-button" data-note="E3">Mi3</button>
+        <button class="note-button" data-note="F3">Fa3</button>
+        <button class="note-button" data-note="G3">Sol3</button>
+        <button class="note-button" data-note="A3">La3</button>
+        <button class="note-button" data-note="B3">Si3</button>
+        <button class="note-button" data-note="C4">Do4</button>
+    </div>
+    <footer>
+        Creado por Manuel Puebla Vega
+    </footer>
+    <script>
+        let audioCtx; // Contexto de audio global
+        const buffers = {}; // Objeto para almacenar los buffers de audio de las notas
+        const activeSources = {}; // Objeto para almacenar las fuentes de audio activas (para poder detenerlas)
+
+        /**
+         * Carga un archivo de audio (muestra) para una nota específica.
+         * @param {string} note El nombre de la nota (ej. 'C3', 'D3').
+         * @returns {Promise<AudioBuffer|null>} Una promesa que resuelve con el AudioBuffer o null si falla.
+         */
+        async function loadSample(note) {
+            try {
+                // Intenta cargar el archivo WAV correspondiente a la nota desde la carpeta 'sounds/'
+                const response = await fetch(`sounds/${note}.wav`);
+                if (!response.ok) {
+                    throw new Error(`No se pudo cargar el sonido para la nota: ${note}. Asegúrate de que "sounds/${note}.wav" exista y sea accesible.`);
+                }
+                const arrayBuffer = await response.arrayBuffer();
+                return await audioCtx.decodeAudioData(arrayBuffer);
+            } catch (error) {
+                console.error("Error al cargar la muestra de audio:", error.message);
+                return null; // Retorna null en caso de error para que la aplicación no falle completamente
+            }
+        }
+
+        /**
+         * Inicializa el contexto de audio y carga todas las muestras necesarias.
+         */
+        async function initSamples() {
+            // Crea o reanuda el AudioContext
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Define las notas para el bajo, desde Do3 hasta Do4, coincidiendo con los nombres de archivo
+            const notes = ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4'];
+            for (const note of notes) {
+                // Carga cada sample y lo guarda en el objeto buffers
+                buffers[note] = await loadSample(note);
+            }
+        }
+
+        /**
+         * Reproduce una nota de bajo a partir de su buffer de audio.
+         * @param {string} note El nombre de la nota a reproducir.
+         */
+        function playSample(note) {
+            // Si la nota ya está activa (sonando) o si el buffer no se cargó, no hacer nada
+            if (activeSources[note] || !buffers[note]) {
+                if (!buffers[note]) {
+                    console.warn(`El sonido para ${note} no se pudo cargar. No se puede reproducir.`);
+                }
+                return;
+            }
+
+            const source = audioCtx.createBufferSource(); // Crea una fuente de buffer
+            const gain = audioCtx.createGain(); // Crea un nodo de ganancia para controlar el volumen
+
+            source.buffer = buffers[note]; // Asigna el buffer de audio a la fuente
+            source.loop = true; // Configura la reproducción en bucle (para notas sostenidas)
+
+            // Conecta la fuente al nodo de ganancia y luego al destino (altavoces)
+            source.connect(gain).connect(audioCtx.destination);
+
+            // Establece el volumen inicial de la nota
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime); // Volumen inicial para el bajo
+
+            source.start(); // Inicia la reproducción
+
+            // Almacena la fuente y el nodo de ganancia para poder detenerlos más tarde
+            activeSources[note] = { source, gain };
+            console.log(`Reproduciendo ${note} desde archivo.`);
+        }
+
+        /**
+         * Detiene la reproducción de una nota de bajo.
+         * @param {string} note El nombre de la nota a detener.
+         */
+        function stopSample(note) {
+            // Si la nota está activa
+            if (activeSources[note]) {
+                const { source, gain } = activeSources[note];
+                // Aplica una rampa exponencial para un desvanecimiento suave (fade out)
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5); // Desvanece en 0.5 segundos
+                // Detiene la fuente después de que la rampa haya terminado
+                source.stop(audioCtx.currentTime + 0.5);
+                // Elimina la referencia de la fuente activa
+                delete activeSources[note];
+                console.log(`Deteniendo ${note}.`);
+            }
+        }
+
+        // Cuando la ventana se ha cargado completamente
+        window.addEventListener('load', () => {
+            initSamples(); // Inicializa los samples de audio
+
+            // Selecciona todos los botones de notas
+            document.querySelectorAll('.note-button').forEach(button => {
+                // Evento al tocar (para móviles)
+                button.addEventListener('touchstart', async (e) => {
+                    e.preventDefault(); // Previene el comportamiento por defecto (ej. scroll)
+                    if (navigator.vibrate) navigator.vibrate(50); // Vibración si el dispositivo lo soporta
+
+                    // Reanuda el contexto de audio si está suspendido (necesario por políticas de reproducción automática)
+                    if (audioCtx && audioCtx.state === 'suspended') {
+                        await audioCtx.resume();
+                    }
+
+                    const note = button.dataset.note; // Obtiene la nota del atributo data-note
+                    button.classList.add('active'); // Añade la clase 'active' para el estilo de presionado
+                    button.classList.add('glow'); // Añade la clase 'glow' para el efecto de brillo
+                    
+                    playSample(note); // Reproduce la nota
+                });
+
+                // Evento al dejar de tocar (para móviles)
+                button.addEventListener('touchend', (e) => {
+                    e.preventDefault(); // Previene el comportamiento por defecto
+                    const note = button.dataset.note;
+                    button.classList.remove('active'); // Quita la clase 'active'
+                    button.classList.remove('glow'); // Quita la clase 'glow'
+                    stopSample(note); // Detiene la nota
+                });
+
+                // Eventos de ratón para compatibilidad con escritorio
+                button.addEventListener('mousedown', async () => {
+                    if (navigator.vibrate) navigator.vibrate(50);
+                    if (audioCtx && audioCtx.state === 'suspended') {
+                        await audioCtx.resume();
+                    }
+                    const note = button.dataset.note;
+                    button.classList.add('active');
+                    button.classList.add('glow');
+                    playSample(note);
+                });
+
+                button.addEventListener('mouseup', () => {
+                    const note = button.dataset.note;
+                    button.classList.remove('active');
+                    button.classList.remove('glow');
+                    stopSample(note);
+                });
+
+                // También manejar mouseleave para detener la nota si el ratón se sale del botón mientras está presionado
+                button.addEventListener('mouseleave', () => {
+                    const note = button.dataset.note;
+                    // Solo detener si el botón estaba activo (presionado)
+                    if (button.classList.contains('active')) {
+                        button.classList.remove('active');
+                        button.classList.remove('glow');
+                        stopSample(note);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
